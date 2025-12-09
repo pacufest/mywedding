@@ -1,28 +1,31 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Invitación de Boda</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Invitación de Boda - Interactiva</title>
 
-<!-- Fuente romántica -->
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
 
 <style>
+  /* Reset y layout */
+  * { box-sizing: border-box; }
+  html,body { height:100%; }
   body {
     margin: 0;
-    padding: 0;
     font-family: 'Playfair Display', serif;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     background: url('https://images.pexels.com/photos/2395249/pexels-photo-2395249.jpeg') center center / cover no-repeat;
-    overflow: hidden;
+    /* importante: permitir scroll para evitar "blanco" en algunos navegadores */
+    overflow: auto;
+    -webkit-font-smoothing:antialiased;
   }
 
-  /* iPhone */
+  /* IPHONE */
   .iphone {
     position: relative;
     width: 340px;
@@ -34,198 +37,258 @@
     justify-content: center;
     align-items: center;
     opacity: 0;
-    transform: scale(0.8);
-    transition: opacity 1s ease-out, transform 1s ease-out;
+    transform: scale(0.92);
+    transition: opacity .8s ease-out, transform .8s ease-out;
   }
-  .iphone.show {
-    opacity: 1;
-    transform: scale(1);
-  }
+  .iphone.show { opacity:1; transform: scale(1); }
 
   .side-button {
-    position: absolute;
-    right: -8px;
-    top: 200px;
-    width: 5px;
-    height: 80px;
-    background: #333;
-    border-radius: 3px;
+    position: absolute; right: -8px; top: 200px;
+    width: 5px; height: 80px; background: #333; border-radius: 3px;
   }
 
-  /* Pantalla interna */
+  /* PANTALLA INTERNA */
   .screen {
     position: relative;
     width: 90%;
     height: 85%;
-    background: linear-gradient(to bottom, #ffffff 0%, #fffaf0 100%);
+    background: linear-gradient(to bottom,#ffffff 0%,#fffaf0 100%);
     border-radius: 40px;
-    box-shadow: inset 0 0 25px rgba(0,0,0,0.1);
+    box-shadow: inset 0 0 25px rgba(0,0,0,.08);
     overflow: hidden;
+    will-change: transform, opacity; /* ayuda a forzar render */
   }
 
-  /* Slider */
-  .slider-container {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    position: relative;
-  }
-
+  /* SLIDER */
+  .slider-container { width:100%; height:100%; position:relative; overflow:hidden; }
   .slider {
-    display: flex;
-    width: 500%;
+    display:flex;
+    width: 600%; /* 6 slides */
     height: 100%;
-    transition: transform 0.6s ease-in-out;
+    transition: transform .55s cubic-bezier(.2,.8,.2,1);
+    touch-action: pan-y;
   }
-
   .slide {
-    width: 100%;
-    flex-shrink: 0;
-    padding: 25px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    width:100%;
+    flex:0 0 100%;
+    padding: 26px;
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
   }
 
   .slide h1 {
     font-family: 'Great Vibes', cursive;
-    font-size: 48px;
+    font-size: 46px;
     color: #bfa46f;
+    margin:0;
   }
-
   .slide p, .slide a {
-    font-size: 18px;
-    color: #5c4b3b;
-    line-height: 1.6;
+    font-size:16px;
+    color:#5c4b3b;
+    line-height:1.5;
+    margin:0;
   }
 
   .btn {
-    margin-top: 15px;
-    padding: 12px 20px;
-    background: linear-gradient(45deg, #bfa46f, #f3e8c8);
-    color: #fff;
-    border: none;
-    border-radius: 15px;
-    font-size: 18px;
-    cursor: pointer;
+    margin-top:12px;
+    padding:10px 16px;
+    background: linear-gradient(45deg,#bfa46f,#f3e8c8);
+    color:#fff;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    font-size:15px;
   }
 
-  /* Flechas del slider */
+  /* Flechas */
   .arrow {
-    position: absolute;
-    bottom: 20px;
-    font-size: 28px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #bfa46f;
+    position:absolute;
+    bottom: 18px;
+    font-size:24px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    color:#bfa46f;
+    user-select:none;
   }
-  .arrow.left { left: 20px; }
-  .arrow.right { right: 20px; }
+  .arrow.left { left:14px; }
+  .arrow.right { right:14px; }
 
-  /* Modal general */
+  /* GALERIA (slide 6) */
+  .gallery {
+    width:100%;
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:10px;
+    padding:8px;
+    align-items:start;
+  }
+  .gallery-item {
+    background:#fff;
+    border-radius:12px;
+    overflow:hidden;
+    min-height:120px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+  }
+  .gallery-item img {
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .gallery-empty {
+    color:#8a7a6a;
+    padding:14px;
+    text-align:center;
+  }
+  .gallery-controls {
+    margin-top:10px;
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  .small-btn {
+    padding:8px 10px;
+    border-radius:10px;
+    border:none;
+    background:#bfa46f;
+    color:white;
+    cursor:pointer;
+  }
+
+  /* MODALES */
   .modal, .image-modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.6);
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:1200;
+    background: rgba(0,0,0,0.6);
+    justify-content:center;
+    align-items:center;
+    padding:20px;
   }
-
+  .modal.show, .image-modal.show { display:flex; }
   .modal-content, .image-modal-content {
-    background-color: #fffaf0;
-    margin: 10% auto;
-    padding: 20px;
-    border-radius: 20px;
-    width: 80%;
-    max-width: 500px;
-    text-align: center;
+    width:100%;
+    max-width:520px;
+    background:#fffaf0;
+    padding:18px;
+    border-radius:16px;
+    text-align:left;
+    box-shadow:0 8px 26px rgba(0,0,0,0.25);
   }
-
+  .modal-content h2 { margin:0 0 8px 0; color:#bfa46f; }
   .close, .closeAbout {
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    color: #bfa46f;
-    cursor: pointer;
+    float:right;
+    font-size:22px;
+    font-weight:bold;
+    color:#bfa46f;
+    cursor:pointer;
+  }
+  .preview {
+    width:100%;
+    max-height:320px;
+    margin-top:10px;
+    border-radius:10px;
+    object-fit:cover;
+  }
+  .file-row { display:flex; gap:8px; align-items:center; margin-top:8px; }
+
+  /* RESPONSIVE */
+  @media (max-width:420px){
+    .iphone { width:320px; height:640px; }
+    .slide h1 { font-size:40px; }
+    .slider { transition: transform .45s; }
   }
 </style>
-
 </head>
 <body>
 
-<!-- 📱 IPHONE -->
-<div id="phone" class="iphone">
+<!-- IPHONE -->
+<div id="phone" class="iphone" aria-hidden="false">
   <div class="side-button"></div>
 
   <div class="screen">
-
-    <!-- SLIDER -->
     <div class="slider-container">
-      <div class="slider">
+      <div id="slider" class="slider">
 
-        <!-- SLIDE 1 -->
-        <div class="slide">
+        <!-- SLIDE 1: Fecha -->
+        <div class="slide" data-index="0" aria-label="Fecha">
           <h1>¡Nos Casamos!</h1>
-          <p>
-            Fecha: <strong>03/01/2026</strong><br>
-            Iglesia: Virgen del Rosario<br>
-            Hora: <strong>19:00 hs</strong>
-          </p>
+          <p>Fecha: <strong>03/01/2026</strong></p>
+          <p>Iglesia: Virgen del Rosario — <strong>19:00 hs</strong></p>
         </div>
 
-        <!-- SLIDE 2 -->
-        <div class="slide">
+        <!-- SLIDE 2: Ceremonia -->
+        <div class="slide" data-index="1" aria-label="Ceremonia">
           <h1>Ceremonia</h1>
-          <p>
-            Iglesia: <strong>Virgen del Rosario</strong><br>
-            Hora: 19:00 hs<br><br>
-            <a href="https://maps.google.com" target="_blank">📍 Ver ubicación</a>
-          </p>
+          <p>Iglesia: <strong>Virgen del Rosario</strong></p>
+          <p>Hora: 19:00 hs</p>
+          <a href="https://maps.google.com" target="_blank">📍 Ver ubicación</a>
         </div>
 
-        <!-- SLIDE 3 -->
-        <div class="slide">
+        <!-- SLIDE 3: Recepción -->
+        <div class="slide" data-index="2" aria-label="Recepción">
           <h1>Recepción</h1>
-          <p>
-            Posada Los Abuelos<br>
-            Hora: 20:30 hs<br><br>
-            <a href="https://maps.google.com" target="_blank">📍 Ver ubicación</a>
-          </p>
+          <p>Posada Los Abuelos</p>
+          <p>Hora: 20:30 hs</p>
+          <a href="https://maps.google.com" target="_blank">📍 Ver ubicación</a>
         </div>
 
-        <!-- SLIDE 4 -->
-        <div class="slide">
+        <!-- SLIDE 4: Tenida -->
+        <div class="slide" data-index="3" aria-label="Tenida">
           <h1>Tenida</h1>
           <p><strong>Sport Elegante</strong></p>
         </div>
 
-        <!-- SLIDE 5 -->
-        <div class="slide">
+        <!-- SLIDE 5: Info + botones -->
+        <div class="slide" data-index="4" aria-label="Información">
           <h1>Información</h1>
-          <button id="giftButton2" class="btn">🎁 Hacer un Regalo</button>
-          <button id="aboutButton" class="btn">💛 About Us</button>
+          <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+            <button id="giftButton" class="btn">🎁 Hacer un regalo</button>
+            <button id="aboutButton" class="btn">💛 About Us</button>
+            <button id="openAllImageModals" class="btn">🖼️ Cargar Imágenes</button>
+          </div>
         </div>
 
-      </div>
-    </div>
+        <!-- SLIDE 6: Galería (nuevo) -->
+        <div class="slide" data-index="5" aria-label="Galería">
+          <h1>Fotos</h1>
+          <div class="gallery" id="gallery">
+            <!-- items se insertan por JS -->
+          </div>
 
-    <!-- FLECHAS -->
-    <button class="arrow left" id="prevSlide">⟵</button>
-    <button class="arrow right" id="nextSlide">⟶</button>
+          <div class="gallery-controls">
+            <button class="small-btn" data-open="img1">Subir foto 1</button>
+            <button class="small-btn" data-open="img2">Subir foto 2</button>
+            <button class="small-btn" data-open="img3">Subir foto 3</button>
+            <button class="small-btn" data-open="img4">Subir foto 4</button>
+            <button class="small-btn" data-open="img5">Subir foto 5</button>
+            <button id="clearAll" class="small-btn" style="background:#8a7a6a">Borrar todo</button>
+          </div>
+        </div>
 
-  </div>
-</div>
+      </div> <!-- slider -->
+    </div> <!-- slider-container -->
 
-<!-- 🎁 MODAL DE REGALO -->
-<div id="giftModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
+    <!-- Flechas -->
+    <button class="arrow left" id="prevSlide" aria-label="Anterior">⟵</button>
+    <button class="arrow right" id="nextSlide" aria-label="Siguiente">⟶</button>
+  </div> <!-- screen -->
+</div> <!-- iphone -->
+
+<!-- MODAL: Regalo -->
+<div id="giftModal" class="modal" role="dialog" aria-hidden="true">
+  <div class="modal-content" role="document">
+    <span class="close" data-close="gift">&times;</span>
     <h2>Cuenta Bancaria</h2>
     <p>Banco: <strong>Nombre del Banco</strong></p>
     <p>Cuenta: <strong>123-456-789</strong></p>
@@ -234,68 +297,364 @@
   </div>
 </div>
 
-<!-- 💛 MODAL ABOUT US -->
-<div id="aboutModal" class="modal">
-  <div class="modal-content">
-    <span class="closeAbout">&times;</span>
+<!-- MODAL: About Us -->
+<div id="aboutModal" class="modal" role="dialog" aria-hidden="true">
+  <div class="modal-content" role="document">
+    <span class="closeAbout" data-close="about">&times;</span>
     <h2>💛 About Us</h2>
     <p>Nuestra historia comenzó así...</p>
-
-    <!-- Fotos -->
-    <img src="https://via.placeholder.com/400x300" style="width:100%; border-radius:15px; margin-top:15px;">
-    <img src="https://via.placeholder.com/400x300" style="width:100%; border-radius:15px; margin-top:15px;">
+    <img src="https://via.placeholder.com/520x320" alt="Novios" style="width:100%; border-radius:12px; margin-top:10px;">
+    <p style="margin-top:8px; color:#6b5746">Podés agregar fotos reales usando los botones de la galería.</p>
   </div>
 </div>
 
-<!-- 🖼️ LOS 5 MODALES DE IMÁGENES -->
-<div id="imageModal1" class="image-modal"><div class="image-modal-content">Modal 1<br><input type="file" accept="image/*"></div></div>
-<div id="imageModal2" class="image-modal"><div class="image-modal-content">Modal 2<br><input type="file" accept="image/*"></div></div>
-<div id="imageModal3" class="image-modal"><div class="image-modal-content">Modal 3<br><input type="file" accept="image/*"></div></div>
-<div id="imageModal4" class="image-modal"><div class="image-modal-content">Modal 4<br><input type="file" accept="image/*"></div></div>
-<div id="imageModal5" class="image-modal"><div class="image-modal-content">Modal 5<br><input type="file" accept="image/*"></div></div>
+<!-- 5 MODALES para subir imágenes -->
+<!-- Modal plantilla -->
+<div id="imageModalTemplate" style="display:none"></div>
 
-<!-- ⭐ SCRIPTS -->
+<div id="imgModal1" class="image-modal" aria-hidden="true">
+  <div class="image-modal-content">
+    <span class="close" data-close="img1">&times;</span>
+    <h3>Subir Foto 1</h3>
+    <div class="file-row">
+      <input id="fileInput1" type="file" accept="image/*">
+      <button id="remove1" class="small-btn" style="background:#8a7a6a">Eliminar</button>
+    </div>
+    <img id="preview1" class="preview" src="" alt="Preview foto 1" style="display:none;">
+  </div>
+</div>
+
+<div id="imgModal2" class="image-modal" aria-hidden="true">
+  <div class="image-modal-content">
+    <span class="close" data-close="img2">&times;</span>
+    <h3>Subir Foto 2</h3>
+    <div class="file-row">
+      <input id="fileInput2" type="file" accept="image/*">
+      <button id="remove2" class="small-btn" style="background:#8a7a6a">Eliminar</button>
+    </div>
+    <img id="preview2" class="preview" src="" alt="Preview foto 2" style="display:none;">
+  </div>
+</div>
+
+<div id="imgModal3" class="image-modal" aria-hidden="true">
+  <div class="image-modal-content">
+    <span class="close" data-close="img3">&times;</span>
+    <h3>Subir Foto 3</h3>
+    <div class="file-row">
+      <input id="fileInput3" type="file" accept="image/*">
+      <button id="remove3" class="small-btn" style="background:#8a7a6a">Eliminar</button>
+    </div>
+    <img id="preview3" class="preview" src="" alt="Preview foto 3" style="display:none;">
+  </div>
+</div>
+
+<div id="imgModal4" class="image-modal" aria-hidden="true">
+  <div class="image-modal-content">
+    <span class="close" data-close="img4">&times;</span>
+    <h3>Subir Foto 4</h3>
+    <div class="file-row">
+      <input id="fileInput4" type="file" accept="image/*">
+      <button id="remove4" class="small-btn" style="background:#8a7a6a">Eliminar</button>
+    </div>
+    <img id="preview4" class="preview" src="" alt="Preview foto 4" style="display:none;">
+  </div>
+</div>
+
+<div id="imgModal5" class="image-modal" aria-hidden="true">
+  <div class="image-modal-content">
+    <span class="close" data-close="img5">&times;</span>
+    <h3>Subir Foto 5</h3>
+    <div class="file-row">
+      <input id="fileInput5" type="file" accept="image/*">
+      <button id="remove5" class="small-btn" style="background:#8a7a6a">Eliminar</button>
+    </div>
+    <img id="preview5" class="preview" src="" alt="Preview foto 5" style="display:none;">
+  </div>
+</div>
+
 <script>
-  // Animación iPhone
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      document.getElementById('phone').classList.add('show');
-    }, 700);
+/* -------------------------
+   Inicialización del slider
+   ------------------------- */
+const slider = document.getElementById('slider');
+const totalSlides = 6;
+let currentSlide = 0;
+
+const updateSlider = () => {
+  slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+};
+document.getElementById('nextSlide').addEventListener('click', () => {
+  currentSlide = (currentSlide + 1) % totalSlides;
+  updateSlider();
+});
+document.getElementById('prevSlide').addEventListener('click', () => {
+  currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+  updateSlider();
+});
+
+/* Soporte swipe táctil para móviles */
+let startX = 0;
+let isDragging = false;
+slider.addEventListener('touchstart', (e) => {
+  startX = e.touches[0].clientX;
+  isDragging = true;
+});
+slider.addEventListener('touchmove', (e) => {
+  if (!isDragging) return;
+  const x = e.touches[0].clientX;
+  const dx = x - startX;
+  // permite un poco de movimiento visual:
+  slider.style.transform = `translateX(calc(-${currentSlide * 100}% + ${dx}px))`;
+});
+slider.addEventListener('touchend', (e) => {
+  isDragging = false;
+  const endX = e.changedTouches[0].clientX;
+  const diff = endX - startX;
+  if (diff < -40) { currentSlide = Math.min(currentSlide + 1, totalSlides - 1); }
+  else if (diff > 40) { currentSlide = Math.max(currentSlide - 1, 0); }
+  updateSlider();
+});
+
+/* Mostrar iPhone (animación) */
+window.addEventListener('load', () => {
+  setTimeout(()=> document.getElementById('phone').classList.add('show'), 500);
+});
+
+/* -------------------------
+   Modales básicos (gift + about)
+   ------------------------- */
+const giftModal = document.getElementById('giftModal');
+const aboutModal = document.getElementById('aboutModal');
+
+document.getElementById('giftButton').addEventListener('click', ()=> {
+  giftModal.classList.add('show'); giftModal.setAttribute('aria-hidden','false');
+});
+document.querySelector('[data-close="gift"]').addEventListener('click', ()=> {
+  giftModal.classList.remove('show'); giftModal.setAttribute('aria-hidden','true');
+});
+
+document.getElementById('aboutButton').addEventListener('click', ()=> {
+  aboutModal.classList.add('show'); aboutModal.setAttribute('aria-hidden','false');
+});
+document.querySelector('[data-close="about"]').addEventListener('click', ()=> {
+  aboutModal.classList.remove('show'); aboutModal.setAttribute('aria-hidden','true');
+});
+
+/* Cerrar modales al clickear fuera */
+window.addEventListener('click', (e) => {
+  if (e.target === giftModal) { giftModal.classList.remove('show'); giftModal.setAttribute('aria-hidden','true'); }
+  if (e.target === aboutModal) { aboutModal.classList.remove('show'); aboutModal.setAttribute('aria-hidden','true'); }
+});
+
+/* -------------------------
+   Lógica de subida y gallery
+   ------------------------- */
+
+const storageKeys = ['wedding_img_1','wedding_img_2','wedding_img_3','wedding_img_4','wedding_img_5'];
+
+/* Funciones util */
+function saveImageToStorage(key, dataURL) {
+  try { localStorage.setItem(key, dataURL); } catch(e){ console.warn('localStorage fail', e); }
+}
+function removeImageFromStorage(key){
+  localStorage.removeItem(key);
+}
+function readImageFromStorage(key){
+  return localStorage.getItem(key);
+}
+
+/* Elementos */
+const galleryEl = document.getElementById('gallery');
+const fileInputs = [
+  document.getElementById('fileInput1'),
+  document.getElementById('fileInput2'),
+  document.getElementById('fileInput3'),
+  document.getElementById('fileInput4'),
+  document.getElementById('fileInput5')
+];
+const previews = [
+  document.getElementById('preview1'),
+  document.getElementById('preview2'),
+  document.getElementById('preview3'),
+  document.getElementById('preview4'),
+  document.getElementById('preview5')
+];
+const removeBtns = [
+  document.getElementById('remove1'),
+  document.getElementById('remove2'),
+  document.getElementById('remove3'),
+  document.getElementById('remove4'),
+  document.getElementById('remove5')
+];
+
+/* Abrir modales desde los botones en galería */
+document.querySelectorAll('.small-btn[data-open]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const which = btn.getAttribute('data-open'); // img1..img5
+    const modal = document.getElementById(which === 'img1' ? 'imgModal1' :
+                                        which === 'img2' ? 'imgModal2' :
+                                        which === 'img3' ? 'imgModal3' :
+                                        which === 'img4' ? 'imgModal4' :
+                                        'imgModal5');
+    modal.classList.add('show'); modal.setAttribute('aria-hidden','false');
   });
+});
 
-  // Slider
-  let currentSlide = 0;
-  const slider = document.querySelector('.slider');
-  const totalSlides = 5;
+/* Abrir todos los modales (botón en slide 5) */
+document.getElementById('openAllImageModals').addEventListener('click', () => {
+  // abrimos el primero como entrada; el usuario puede abrir los demás
+  document.getElementById('imgModal1').classList.add('show');
+});
 
-  document.getElementById('nextSlide').onclick = () => {
-    currentSlide = (currentSlide + 1) % totalSlides;
-    slider.style.transform = `translateX(-${currentSlide * 100}%)`;
-  };
+/* Cerrar modales con la X (para img modals) */
+document.querySelectorAll('.image-modal .close').forEach(closeEl => {
+  closeEl.addEventListener('click', (e) => {
+    const which = closeEl.getAttribute('data-close');
+    const modal = document.getElementById(which === 'img1' ? 'imgModal1' :
+                                        which === 'img2' ? 'imgModal2' :
+                                        which === 'img3' ? 'imgModal3' :
+                                        which === 'img4' ? 'imgModal4' :
+                                        'imgModal5');
+    modal.classList.remove('show'); modal.setAttribute('aria-hidden','true');
+  });
+});
 
-  document.getElementById('prevSlide').onclick = () => {
-    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-    slider.style.transform = `translateX(-${currentSlide * 100}%)`;
-  };
+/* Cerrar modal si clic fuera del contenido */
+document.querySelectorAll('.image-modal').forEach(mod => {
+  mod.addEventListener('click', (e) => {
+    if (e.target === mod) {
+      mod.classList.remove('show'); mod.setAttribute('aria-hidden','true');
+    }
+  });
+});
 
-  // Modal regalo
-  const giftBtn = document.getElementById('giftButton2');
-  const giftModal = document.getElementById('giftModal');
-  document.querySelector('.close').onclick = () => giftModal.style.display = "none";
-  giftBtn.onclick = () => giftModal.style.display = "block";
+/* Manejar file inputs: leer como DataURL, guardar, mostrar preview y actualizar galería */
+fileInputs.forEach((input, idx) => {
+  input.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const dataURL = evt.target.result;
+      // guardar
+      saveImageToStorage(storageKeys[idx], dataURL);
+      // mostrar preview
+      const p = previews[idx];
+      p.src = dataURL; p.style.display='block';
+      // actualizar galería
+      renderGallery();
+    };
+    reader.readAsDataURL(file);
+  });
+});
 
-  // About us
-  const aboutBtn = document.getElementById('aboutButton');
-  const aboutModal = document.getElementById('aboutModal');
-  document.querySelector('.closeAbout').onclick = () => aboutModal.style.display = "none";
-  aboutBtn.onclick = () => aboutModal.style.display = "block";
+/* Botones eliminar individuales */
+removeBtns.forEach((btn, idx) => {
+  btn.addEventListener('click', () => {
+    removeImageFromStorage(storageKeys[idx]);
+    previews[idx].src = ''; previews[idx].style.display = 'none';
+    renderGallery();
+  });
+});
 
-  // Cerrar al hacer click afuera
-  window.onclick = function(e) {
-    if (e.target === giftModal) giftModal.style.display = "none";
-    if (e.target === aboutModal) aboutModal.style.display = "none";
-  };
+/* Limpiar todo */
+document.getElementById('clearAll').addEventListener('click', () => {
+  storageKeys.forEach(k => localStorage.removeItem(k));
+  previews.forEach(p => { p.src=''; p.style.display='none'; });
+  renderGallery();
+});
+
+/* Renderiza la galería con lo que haya en localStorage */
+function renderGallery(){
+  galleryEl.innerHTML = '';
+  let any = false;
+  for (let i=0;i<5;i++){
+    const key = storageKeys[i];
+    const data = readImageFromStorage(key);
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    if (data) {
+      any = true;
+      const img = document.createElement('img');
+      img.src = data;
+      img.alt = `Foto ${i+1}`;
+      item.appendChild(img);
+
+      // boton eliminar pequeño dentro de cada item
+      const del = document.createElement('button');
+      del.textContent = '✕';
+      del.title = 'Eliminar';
+      del.style.position='absolute';
+      del.style.top='8px';
+      del.style.right='8px';
+      del.style.background='rgba(0,0,0,0.35)';
+      del.style.border='none';
+      del.style.color='white';
+      del.style.borderRadius='50%';
+      del.style.width='30px';
+      del.style.height='30px';
+      del.style.cursor='pointer';
+      del.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        removeImageFromStorage(key);
+        // also clear preview
+        if (previews[i]) { previews[i].src=''; previews[i].style.display='none'; }
+        renderGallery();
+      });
+      item.appendChild(del);
+
+      // al click abrir modal con imagen grande (a same modal we can reuse)
+      item.addEventListener('click', () => {
+        // reutilizamos aboutModal para mostrar la foto grande temporalmente
+        const aboutImg = aboutModal.querySelector('img');
+        aboutImg.src = data;
+        aboutImg.alt = `Foto ${i+1}`;
+        aboutModal.classList.add('show'); aboutModal.setAttribute('aria-hidden','false');
+      });
+
+    } else {
+      const empty = document.createElement('div');
+      empty.className = 'gallery-empty';
+      empty.innerText = 'Vacío\n(subir foto)';
+      item.appendChild(empty);
+    }
+    galleryEl.appendChild(item);
+  }
+
+  // sincronizar previews con storage
+  for (let i=0;i<5;i++){
+    const data = readImageFromStorage(storageKeys[i]);
+    if (data) {
+      previews[i].src = data;
+      previews[i].style.display = 'block';
+    } else {
+      previews[i].src = '';
+      previews[i].style.display = 'none';
+    }
+  }
+
+  if (!any) {
+    // si no hay imágenes, mostramos un mensaje claro (opcional)
+    // aquí dejamos la grid con placeholders ya creados arriba
+  }
+}
+
+/* Cargar cualquier imagen ya guardada al iniciar */
+window.addEventListener('DOMContentLoaded', () => {
+  renderGallery();
+});
+
+/* Botón "Cargar Imágenes" en slide 5 abre imgModal1 por comodidad */
+document.getElementById('openAllImageModals').addEventListener('click', () => {
+  document.getElementById('imgModal1').classList.add('show');
+});
+
+/* Manejo accesible: cerrar aboutModal con ESC */
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal, .image-modal').forEach(m => { m.classList.remove('show'); m.setAttribute('aria-hidden','true'); });
+  }
+});
 </script>
-
 </body>
 </html>
